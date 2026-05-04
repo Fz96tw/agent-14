@@ -1,36 +1,47 @@
 #!/bin/bash
 
-calculate() {
-  local operand1="" operand2="" operator=""
-  operand1="$1"
-  operator="$2"
-  operand2="$3"
-
-  case "$operator" in
-    +)
-      echo $(($operand1 + $operand2))
-      ;; 
-    -)
-      echo $(($operand1 - $operand2))
-      ;; 
-    *)\n      echo "Error: Unsupported operator"
-      ;; 
-    \*)
-      echo $(($operand1 * $operand2))
-      ;; 
-    /)
-      if [ "$operand2" -eq 0 ]; then
-        echo "Error: Division by zero"
-      else
-        echo $(($operand1 / $operand2))
-      fi
-      ;; 
-  esac
+# Function to format output messages
+format_output() {
+    echo "$1"
 }
 
-if [ "$#" -ne 3 ]; then
-  echo "Usage: calc.sh <operand1> <operator> <operand2>"
-  exit 1
-fi
+# Function to perform calculations
+calculate() {
+    if [ $# -ne 3 ]; then
+        format_output "Usage: calc.sh <operand1> <operator> <operand2> (e.g., 3 + 4)"
+        return
+    fi
+    local operand1=$1
+    local operator=$2
+    local operand2=$3
 
-calculate "$1" "$2" "$3"
+    case $operator in
+        +)
+            result=$((operand1 + operand2))
+            format_output "Result: $result"
+            ;;
+        -)
+            result=$((operand1 - operand2))
+            format_output "Result: $result"
+            ;;
+        *)
+            format_output "Error: Unsupported operator '$operator'. Supported operators are: +, -, *, /"
+            return
+            ;; 
+        /)
+            if [ $operand2 -eq 0 ]; then
+                format_output "Error: Division by zero is not allowed. Please enter a valid divisor."
+                return
+            fi
+            result=$((operand1 / operand2))
+            format_output "Result: $result"
+            ;;
+        *)
+            format_output "Error: Unsupported operator '$operator'. Supported operators are: +, -, *, /"
+            return
+            ;; 
+    esac
+}
+
+# Main script execution
+calculate "$@"
